@@ -60,6 +60,9 @@
 | 완료한 행동이 DB에 저장됩니다 | 지금까지 완료한 한 걸음이 사과로 쌓입니다. 기록 1개 삭제와 전체 삭제를 할 수 있습니다 |
 
 ---
+## 핵심 구현
+
+AI 부분은 `AiService`의 `generateProblems` → `generateActions` → `generateTodayActions` → `generateShrinkActions`로 이어지는 4단계 **프롬프트 체이닝**입니다. 단계마다 앞에서 사용자가 고른 고민·목표·과제를 프롬프트에 다시 넣어 맥락을 유지하고, 응답은 JSON 형식으로 강제해 화면에서 `JSON.parse()`로 바로 읽습니다. 화면 사이의 값은 React Router의 `navigate(path, { state })`로 넘깁니다. 프론트엔드의 `fetchAiWithCache`는 요청 내용을 해시한 키로 `sessionStorage`에 응답을 캐시하고, 같은 요청이 진행 중이면 `Map`에 담아 둔 Promise를 공유해 Gemini 중복 호출을 막습니다. 완료 기록은 `getDeviceId()`가 만든 기기 UUID를 `X-Device-Id` 헤더로 보내 로그인 없이 사용자를 구분합니다. `saveHistory`가 서버 저장에 실패하면 대기 목록에 보관했다가 `syncLocalRecords`가 `/api/history/import`로 다시 보냅니다. 백엔드의 `StepHistoryService.save`는 같은 `clientRecordId`가 이미 있으면 새로 저장하지 않고 기존 기록을 돌려주며, DB의 UNIQUE 제약과 함께 여러 번 보내도 한 번만 저장되도록 합니다.
 
 ## 기술 스택
 
