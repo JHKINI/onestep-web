@@ -2,9 +2,9 @@
 
 > 복잡한 생각을 **한 걸음씩** 정리해볼까요?
 
-막막한 프로젝트를 AI와 함께 **오늘 바로 할 수 있는 작은 행동 하나**로 쪼개 주는 웹 서비스입니다.
+막막한 하려는 일를 AI와 함께 **오늘 바로 할 수 있는 작은 행동 하나**로 쪼개 주는 웹 서비스입니다.
 
-프로젝트를 입력하면 AI(Google Gemini)가 **목표 → 작은 과제 → 오늘 할 행동** 순서로 후보를 제안합니다.
+하려는 일를 입력하면 AI(Google Gemini)가 **목표 → 작은 과제 → 오늘 할 행동** 순서로 후보를 제안합니다.
 사용자는 하나씩 골라 실행하고, 완료한 한 걸음은 DB에 저장되어 "과일 바구니"에 사과로 쌓입니다.
 
 <p align="center">
@@ -33,17 +33,17 @@
 
 ### 1. 고민 털어놓기
 
-| 프로젝트 입력 | 우선순위 선택 |
+| 하려는 일 입력 | 우선순위 선택 |
 | :---: | :---: |
-| <img src="one-step/result/step2_chat.png" width="400" alt="프로젝트 입력"> | <img src="one-step/result/step2_chat2.png" width="400" alt="우선순위 선택"> |
-| 채팅 형식으로 막막한 프로젝트를 편하게 적습니다. (최대 1000자) | "가장 중요한 부분부터" / "가장 급한 부분부터" 중 기준을 고릅니다. |
+| <img src="one-step/result/step2_chat.png" width="400" alt="하려는 일 입력"> | <img src="one-step/result/step2_chat2.png" width="400" alt="우선순위 선택"> |
+| 채팅 형식으로 막막한 하려는 일를 편하게 적습니다. (최대 1000자) | "가장 중요한 부분부터" / "가장 급한 부분부터" 중 기준을 고릅니다. |
 
 ### 2. AI와 함께 쪼개기
 
 | ③ 목표 선택 | ④ 작은 과제 선택 | ⑤ 오늘 할 행동 선택 |
 | :---: | :---: | :---: |
 | <img src="one-step/result/ste3.png" width="270" alt="목표 선택"> | <img src="one-step/result/step4.png" width="270" alt="작은 과제 선택"> | <img src="one-step/result/step5.png" width="270" alt="오늘 할 행동 선택"> |
-| 프로젝트에서 먼저 다뤄볼 목표 후보 3개 | 목표를 이루기 위한 작은 과제 후보 3개 | 오늘 바로 시작할 수 있는 행동 후보 3개 |
+| 하려는 일에서 먼저 다뤄볼 목표 후보 3개 | 목표를 이루기 위한 작은 과제 후보 3개 | 오늘 바로 시작할 수 있는 행동 후보 3개 |
 
 ### 3. 오늘의 한 걸음 실행
 
@@ -116,7 +116,7 @@ onestep-web/
 | `id` | BIGINT, PK, AUTO_INCREMENT | NO | 기록 번호 |
 | `device_id` | CHAR(36) | NO | 브라우저마다 만든 UUID. 로그인 대신 기기를 구분합니다 |
 | `client_record_id` | BIGINT | YES | 브라우저에서 만든 기록 번호. 같은 기록이 두 번 저장되지 않게 막습니다 |
-| `project` | VARCHAR(1000) | YES | 입력한 프로젝트 |
+| `project` | VARCHAR(1000) | YES | 입력한 하려는 일 |
 | `priority` | VARCHAR(20) | YES | `IMPORTANT` / `URGENT` |
 | `goal` | VARCHAR(500) | YES | 선택한 목표 |
 | `task` | VARCHAR(500) | YES | 선택한 작은 과제 |
@@ -152,7 +152,7 @@ erDiagram
 
 | Method | Endpoint | 설명 | 요청 Body |
 | --- | --- | --- | --- |
-| POST | `/problems` | 프로젝트 → 목표 후보 | `concern`, `priority` (`IMPORTANT` / `URGENT`) |
+| POST | `/problems` | 하려는 일 → 목표 후보 | `concern`, `priority` (`IMPORTANT` / `URGENT`) |
 | POST | `/actions` | 목표 → 작은 과제 후보 | `concern`, `problem` |
 | POST | `/today-actions` | 작은 과제 → 오늘 할 행동 후보 | `concern`, `goal`, `task` |
 | POST | `/shrink-actions` | 행동을 더 작게 쪼개기 | `concern`, `goal`, `task`, `action` |
@@ -179,7 +179,7 @@ Content-Type: application/json
 
 {
   "clientRecordId": 1762675200000,
-  "project": "스프링 부트 프로젝트 하려하는데 뭘할지 모르겠어",
+  "project": "스프링 부트 하려는 일 하려하는데 뭘할지 모르겠어",
   "priority": "URGENT",
   "goal": "기존 서비스 벤치마킹하여 주제 결정하기",
   "task": "자주 사용하는 앱 3가지를 선정하여 핵심 기능 비교표 작성하기",
@@ -192,7 +192,7 @@ Content-Type: application/json
 {
   "id": 7,
   "clientRecordId": 1762675200000,
-  "project": "스프링 부트 프로젝트 하려하는데 뭘할지 모르겠어",
+  "project": "스프링 부트 하려는 일 하려하는데 뭘할지 모르겠어",
   "priority": "URGENT",
   "goal": "기존 서비스 벤치마킹하여 주제 결정하기",
   "task": "자주 사용하는 앱 3가지를 선정하여 핵심 기능 비교표 작성하기",
@@ -259,7 +259,7 @@ npm install
 npm run dev
 ```
 
-Vite가 알려주는 주소(기본 `http://localhost:5173`)로 접속합니다. 다른 프로젝트가 5173을 쓰고 있으면 5174, 5175처럼 다음 포트로 뜨니, 터미널에 찍힌 주소를 확인하세요. 백엔드 CORS는 `localhost`의 모든 포트를 허용합니다.
+Vite가 알려주는 주소(기본 `http://localhost:5173`)로 접속합니다. 다른 하려는 일가 5173을 쓰고 있으면 5174, 5175처럼 다음 포트로 뜨니, 터미널에 찍힌 주소를 확인하세요. 백엔드 CORS는 `localhost`의 모든 포트를 허용합니다.
 
 ---
 
@@ -276,7 +276,7 @@ Vite가 알려주는 주소(기본 `http://localhost:5173`)로 접속합니다. 
 
 ### 2026-11-10
 
-- **버그 수정: 완료 기록에 행동만 저장되던 문제.** "오늘 이것부터 시작할 수 있나요?" 화면(`ActionStartPage`)과 "오늘의 한 걸음" 화면(`TodayActionPage`)이 다음 화면으로 `action`만 넘기고 있었습니다. 그래서 프로젝트·우선순위·목표·과제가 중간에 빠졌습니다. 이제 앞에서 받은 값을 그대로 넘깁니다.
+- **버그 수정: 완료 기록에 행동만 저장되던 문제.** "오늘 이것부터 시작할 수 있나요?" 화면(`ActionStartPage`)과 "오늘의 한 걸음" 화면(`TodayActionPage`)이 다음 화면으로 `action`만 넘기고 있었습니다. 그래서 하려는 일·우선순위·목표·과제가 중간에 빠졌습니다. 이제 앞에서 받은 값을 그대로 넘깁니다.
 - `vite.config.js`: `result/` 폴더와 `.mp4` 파일을 개발 서버 파일 감시에서 제외. 녹화 중인 영상 파일 때문에 `EBUSY` 오류로 개발 서버가 꺼지던 문제를 막았습니다.
 - CORS가 `localhost`의 모든 포트를 허용하도록 변경했습니다.
 
@@ -296,12 +296,12 @@ Vite가 알려주는 주소(기본 `http://localhost:5173`)로 접속합니다. 
 **Frontend**
 - `oneStepHistory.js`: localStorage 저장을 서버 API 호출로 변경. 기기 ID, 오프라인 대기와 재전송, 예전 기록 옮기기를 추가했습니다.
 - `FruitBasketPage.jsx`: 서버에서 기록을 불러옵니다. "불러오는 중"과 "서버 연결 안 됨" 안내를 추가했습니다.
-- 프로젝트 입력칸 최대 1000자 제한 (DB 컬럼 길이와 맞춤)
+- 하려는 일 입력칸 최대 1000자 제한 (DB 컬럼 길이와 맞춤)
 
 ---
 
 ## 앞으로 할 것
 
 - **로그인**: `users` 테이블을 만들고 `step_history`에 `user_id` 컬럼을 추가하는 Flyway `V2` 파일을 만들면 됩니다. 로그인할 때 `UPDATE step_history SET user_id = ? WHERE device_id = ? AND user_id IS NULL`로 이 기기의 기록을 사용자에게 연결합니다.
-- **흐름 전체 저장**: 프로젝트 → 목표 → 과제 → 행동을 각각 테이블로 나눠 저장하면, 고르지 않은 후보나 "더 작게 쪼개기" 이력도 남길 수 있습니다.
+- **흐름 전체 저장**: 하려는 일 → 목표 → 과제 → 행동을 각각 테이블로 나눠 저장하면, 고르지 않은 후보나 "더 작게 쪼개기" 이력도 남길 수 있습니다.
 - **주의**: 지금은 로그인이 없어서, `device_id`를 아는 사람은 그 기록을 볼 수 있습니다. 공개 배포 전에는 접근 제한이 필요합니다.
