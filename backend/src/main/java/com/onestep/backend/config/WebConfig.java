@@ -1,5 +1,6 @@
 package com.onestep.backend.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -11,6 +12,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
+    // 배포한 프론트 주소 (예: https://one-step.vercel.app). 쉼표로 여러 개 가능. 로컬은 비워둔다.
+    @Value("${CORS_ALLOWED_ORIGINS:}")
+    private String[] allowedOrigins;
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
@@ -19,6 +24,7 @@ public class WebConfig implements WebMvcConfigurer {
                         "http://localhost:[*]",
                         "http://127.0.0.1:[*]"
                 )
+                .allowedOrigins(allowedOrigins)
                 .allowedMethods("GET", "POST", "DELETE", "OPTIONS")
                 .allowedHeaders("Content-Type", "X-Device-Id");
     }

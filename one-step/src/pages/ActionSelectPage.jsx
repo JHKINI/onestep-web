@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../utils/apiBase";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -80,7 +81,7 @@ export default function ActionSelectPage() {
 
         const text = await fetchAiWithCache({
           cacheKey,
-          url: "http://localhost:8080/api/ai/today-actions",
+          url: `${API_BASE_URL}/api/ai/today-actions`,
           body: payload,
         });
 
