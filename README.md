@@ -13,6 +13,10 @@
 
 🎬 **시연 영상**: [한걸음 시연.mp4](one-step/result/한걸음%20시연.mp4)
 
+🌐 **배포 주소**: https://onestep-web-virid.vercel.app
+
+> 백엔드를 무료 서버(Render)에 올려 두어서, 한동안 접속이 없으면 서버가 잠들어 **첫 요청에 30~60초** 걸릴 수 있어요. 처음 AI 후보가 늦게 나오면 잠시만 기다려 주세요.
+
 ---
 
 ## 목차
@@ -23,9 +27,10 @@
 4. [DB 구조](#db-구조)
 5. [API](#api)
 6. [실행 방법](#실행-방법)
-7. [완료 기록이 저장되는 방식](#완료-기록이-저장되는-방식)
-8. [변경 이력](#변경-이력)
-9. [앞으로 할 것](#앞으로-할-것)
+7. [배포](#배포)
+8. [완료 기록이 저장되는 방식](#완료-기록이-저장되는-방식)
+9. [변경 이력](#변경-이력)
+10. [앞으로 할 것](#앞으로-할-것)
 
 ---
 
@@ -72,6 +77,7 @@ AI 부분은 `AiService`의 `generateProblems` → `generateActions` → `genera
 | Backend | Java 17, Spring Boot 4.1, Spring Data JPA |
 | DB | MySQL 8, Flyway (테이블 변경 이력 관리) |
 | AI | Google Gen AI SDK (`google-genai`), Gemini |
+| 배포 | Vercel (프론트), Render + Docker (백엔드), TiDB Cloud Starter (MySQL 호환 DB) |
 
 ## 시스템 구조
 
@@ -266,6 +272,51 @@ Vite가 알려주는 주소(기본 `http://localhost:5173`)로 접속합니다. 
 
 ---
 
+## 배포
+
+로컬에서 쓰던 구조를 그대로 두고, **주소와 접속 정보만 환경 변수로 바꿔 끼우는 방식**으로 배포했습니다. 환경 변수가 없으면 이전처럼 `localhost`와 로컬 MySQL로 동작합니다.
+
+```mermaid
+flowchart LR
+    U[사용자 브라우저] --> V[Vercel<br/>React 정적 배포]
+    V -- "POST /api/**<br/>VITE_API_BASE_URL" --> R[Render<br/>Spring Boot Docker]
+    R -- 프롬프트 --> G[Google Gemini]
+    R -- "JDBC (SSL)<br/>DB_URL" --> T[(TiDB Cloud Starter<br/>MySQL 호환)]
+```
+
+| 구분 | 서비스 | 설정 |
+| --- | --- | --- |
+| Frontend | Vercel | Root Directory `one-step`, `vercel.json`으로 새로고침 시 404 방지 |
+| Backend | Render (Docker, Free) | Root Directory `backend`, `backend/Dockerfile`로 빌드 |
+| DB | TiDB Cloud Starter (MySQL 호환 모드) | 무료 사용량 안에서 사용, SSL 접속 |
+
+### 환경 변수
+
+**Render (백엔드)**
+
+| 환경 변수 | 설명 |
+| --- | --- |
+| `DB_URL` | `jdbc:mysql://<호스트>:4000/<DB 이름>?serverTimezone=UTC&characterEncoding=UTF-8&sslMode=VERIFY_IDENTITY` |
+| `DB_USERNAME`, `DB_PASSWORD` | DB 접속 계정 |
+| `GOOGLE_API_KEY` (또는 `GEMINI_API_KEY`) | Gemini API 키 |
+| `CORS_ALLOWED_ORIGINS` | 배포한 프론트 주소 (예: `https://onestep-web-virid.vercel.app`, 끝에 `/` 없이) |
+| `PORT` | Render가 자동으로 넣어 주며, `server.port=${PORT:8080}`로 읽습니다 |
+
+**Vercel (프론트엔드)**
+
+| 환경 변수 | 설명 |
+| --- | --- |
+| `VITE_API_BASE_URL` | Render 백엔드 주소 (끝에 `/` 없이). 빌드할 때 코드에 들어가므로 바꾸면 다시 배포해야 합니다 |
+
+### 배포하면서 정리한 것
+
+- **API 주소 분리**: 화면 코드에 박혀 있던 `http://localhost:8080`을 `utils/apiBase.js`의 `API_BASE_URL`로 모았습니다.
+- **CORS**: `WebConfig`가 로컬 `localhost`는 그대로 허용하고, 배포 주소는 `CORS_ALLOWED_ORIGINS`에서 읽어 추가로 허용합니다. 이 값을 빠뜨리면 브라우저가 요청을 막아 AI 후보가 나오지 않았습니다.
+- **DB 접속 정보**: `application.properties`의 DB 주소를 `${DB_URL:...}`로 바꿔, 배포 환경의 DB로 갈아 끼울 수 있게 했습니다. 테이블은 서버가 켜질 때 Flyway가 만듭니다.
+- **Docker 빌드**: Maven으로 jar를 만드는 단계와 실행 단계를 나눈 `backend/Dockerfile`을 추가했습니다 (Java 17).
+
+---
+
 ## 완료 기록이 저장되는 방식
 
 - **기기 구분**: 처음 접속할 때 `crypto.randomUUID()`로 UUID를 만들어 `localStorage["one-step:device-id"]`에 저장하고, 모든 기록 요청에 `X-Device-Id`로 보냅니다.
@@ -276,6 +327,12 @@ Vite가 알려주는 주소(기본 `http://localhost:5173`)로 접속합니다. 
 ---
 
 ## 변경 이력
+
+### 2026-11-18: 배포와 범용 확장
+
+- **배포**: 프론트는 Vercel, 백엔드는 Render(Docker), DB는 TiDB Cloud Starter로 올렸습니다. 자세한 구성은 [배포](#배포)에 적었습니다.
+- 화면 코드의 `localhost:8080`을 `VITE_API_BASE_URL` 환경 변수로 분리하고, CORS 허용 주소와 DB 접속 정보도 환경 변수로 받도록 바꿨습니다.
+- **범용 확장**: 프로젝트에만 한정하던 문구와 AI 프롬프트(`AiService`)를 공부, 시험, 운동, 습관, 정리, 취업 준비 등 **어떤 일이든** 쪼갤 수 있게 바꿨습니다.
 
 ### 2026-11-10
 
@@ -307,4 +364,5 @@ Vite가 알려주는 주소(기본 `http://localhost:5173`)로 접속합니다. 
 
 - **로그인**: `users` 테이블을 만들고 `step_history`에 `user_id` 컬럼을 추가하는 Flyway `V2` 파일을 만들면 됩니다. 로그인할 때 `UPDATE step_history SET user_id = ? WHERE device_id = ? AND user_id IS NULL`로 이 기기의 기록을 사용자에게 연결합니다.
 - **흐름 전체 저장**: 하려는 일 → 목표 → 과제 → 행동을 각각 테이블로 나눠 저장하면, 고르지 않은 후보나 "더 작게 쪼개기" 이력도 남길 수 있습니다.
-- **주의**: 지금은 로그인이 없어서, `device_id`를 아는 사람은 그 기록을 볼 수 있습니다. 공개 배포 전에는 접근 제한이 필요합니다.
+- **요청 횟수 제한**: 공개로 배포해 둔 상태에서 로그인이 없어서, 누구나 Gemini를 호출할 수 있습니다. 무료 사용량이 한 사람에게 소진되지 않도록 IP별 요청 횟수 제한이 필요합니다.
+- **주의**: 로그인이 없어서 `device_id`를 아는 사람은 그 기록을 볼 수 있습니다. 로그인을 붙이기 전까지는 개인정보를 적지 않도록 안내가 필요합니다.
