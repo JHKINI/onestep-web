@@ -124,7 +124,7 @@ export default function ProblemSelectPage() {
           </span>
 
           <h2>
-            현재 프로젝트에서
+            지금 이야기한 일에서
             <br />
             먼저 다뤄볼 목표를 찾아봤어요.
           </h2>
@@ -133,12 +133,12 @@ export default function ProblemSelectPage() {
         <p className="section-description">
           아까 선택한 기준을 바탕으로
           <br />
-          프로젝트에서 먼저 다뤄볼 목표를 정리해봤어요.
+          이야기한 일에서 먼저 다뤄볼 목표를 정리해봤어요.
         </p>
 
         <div className="concern-preview">
           <div className="preview-label">
-            지금 이야기한 프로젝트
+            지금 이야기한 일
           </div>
 
           <div className="preview-content">
@@ -160,7 +160,7 @@ export default function ProblemSelectPage() {
 
         {loading && (
           <div className="loading-message">
-            프로젝트를 살펴보고 목표 후보를 만들고 있어요...
+            이야기한 내용을 살펴보고 목표 후보를 만들고 있어요...
             <br />
             잠시만 기다려주세요.
           </div>
