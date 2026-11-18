@@ -11,7 +11,9 @@
  * - one-step:pending    서버가 꺼져 있어서 못 보낸 기록. 다음에 다시 보낸다.
  */
 
-const API_URL = "http://localhost:8080/api/history";
+import { API_BASE_URL } from "./apiBase";
+
+const API_URL = `${API_BASE_URL}/api/history`;
 
 const DEVICE_KEY = "one-step:device-id";
 const LEGACY_KEY = "one-step:history";
