@@ -30,7 +30,7 @@ export default function ConcernInput() {
     };
   }, []);
 
-  // 사용자가 프로젝트를 제출한 뒤
+  // 사용자가 고민을 제출한 뒤
   // 봇 메시지를 하나씩 보여줌
   useEffect(() => {
     if (!submitted) return;
@@ -86,7 +86,7 @@ export default function ConcernInput() {
               <strong>한 걸음</strong>
 
               <span>
-                막막한 프로젝트를 함께 정리해요
+                막막한 일을 함께 정리해요
               </span>
             </div>
           </div>
@@ -120,11 +120,11 @@ export default function ConcernInput() {
           {welcomeStep >= 2 && (
             <div className="message bot-message message-appear">
               <div className="bubble">
-                지금 시작하기 막막한 프로젝트가 있나요?
+                지금 시작하기 막막한 일이 있나요?
                 <br />
-                프로젝트가 크고 복잡하게 느껴진다면
+                공부, 운동, 프로젝트, 습관 무엇이든 괜찮아요.
                 <br />
-                편하게 적어주세요.
+                크고 복잡하게 느껴진다면 편하게 적어주세요.
               </div>
             </div>
           )}
@@ -134,9 +134,9 @@ export default function ConcernInput() {
             <div className="message bot-message message-appear">
               <div className="bubble">
                 <span className="chat-example">
-                  예: 이번 학기 팀 프로젝트를 완성해야 하는데
+                  예: 시험이 3주 남았는데
                   <br />
-                  어디부터 시작해야 할지 모르겠어요.
+                  어디부터 공부해야 할지 모르겠어요.
                 </span>
               </div>
             </div>
@@ -161,7 +161,7 @@ export default function ConcernInput() {
               <div className="bubble">
                 이야기해주셔서 고마워요.
                 <br />
-                프로젝트를 한 번에 완성하려고 하지 않아도 괜찮아요.
+                한 번에 다 해내려고 하지 않아도 괜찮아요.
               </div>
             </div>
           )}
@@ -173,7 +173,7 @@ export default function ConcernInput() {
                 먼저 어떤 부분부터 살펴볼지 정해볼게요.
                 <br />
                 <br />
-                프로젝트 안에 해야 할 일이 여러 가지라면
+                그 안에 해야 할 일이 여러 가지라면
                 <br />
                 중요한 부분이나 급한 부분부터 살펴보면
                 <br />
@@ -221,7 +221,7 @@ export default function ConcernInput() {
               onChange={(event) =>
                 setContent(event.target.value)
               }
-              placeholder="진행해야 할 프로젝트를 입력해주세요..."
+              placeholder="막막한 일을 편하게 적어주세요..."
               rows="2"
               maxLength={1000} // DB step_history.project 길이와 같게
             />

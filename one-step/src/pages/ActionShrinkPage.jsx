@@ -247,7 +247,7 @@ export default function ActionShrinkPage() {
               <textarea
                 value={customAction}
                 onChange={handleCustomChange}
-                placeholder="예: 프로젝트 폴더만 열어보기"
+                placeholder="예: 책상 위에 필요한 것만 꺼내두기"
                 rows={4}
                 className="custom-action-input"
               />
